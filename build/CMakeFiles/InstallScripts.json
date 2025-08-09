@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/user/cpp/BadButBetterRayTraiser/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
