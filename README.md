@@ -1,6 +1,6 @@
 # BadButBetterRaytracer
 ## Dependicies
-- [SFML]("ttps://github.com/SFML/SFML")
+- [SFML](https://github.com/SFML/SFML)
 - CMake (v 3.15+)
 ## Installation
 ``` bash
