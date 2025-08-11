@@ -1,6 +1,3 @@
-// #include <SFML/Graphics.hpp>
-#include <cmath>
-#include <iostream>
 #include "DrawingObjects.hpp"
 #include "Raytraiser.hpp"
 #include "Utils.hpp"
@@ -14,8 +11,7 @@ constexpr sf::Vector2u kWindowSize(kWidth, kHeight);
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     sf::RenderWindow window(sf::VideoMode(WindowParameters::kWindowSize), "SFML");
-    //    window.setVerticalSyncEnabled(true);  // Включить VSync
-    //
+
     sf::Clock fpsClock;
     int frameCount{};
 
@@ -29,8 +25,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     DrawingObjects::CreateCamera(cameras);
 
     while (window.isOpen()) {
-        // В игровом цикле:
-        // circle.move(speed * deltaTime, 0);
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
                 window.close();

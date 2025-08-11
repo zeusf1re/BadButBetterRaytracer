@@ -16,7 +16,7 @@ namespace CameraParams {
 
 inline constexpr float kRadius = 5.f;
 
-inline const sf::Vector2f kCameraPosition(5.f, 300.f);
+inline const sf::Vector2f kCameraPosition(400.f, 300.f);
 
 inline const sf::Color kCameraColor(56, 242, 127);
 
@@ -25,8 +25,6 @@ inline const sf::Color kCameraColor(56, 242, 127);
 namespace DrawingObjects {
 
 void CreateCircle(std::vector<std::unique_ptr<sf::Shape>>& shapes);
-
-void CreateKrug(std::vector<std::unique_ptr<sf::VertexArray>>& vertexes);
 
 void CreateBorders(std::vector<std::unique_ptr<sf::Shape>>& shapes);
 

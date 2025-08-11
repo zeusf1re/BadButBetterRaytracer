@@ -1,92 +1,100 @@
 #include "Raytraiser.hpp"
 #include <cmath>
-#include <iostream>
-#include <optional>
 #include "DrawingObjects.hpp"
 
-// Проверяет пересечение луча (заданного углом) с окружностью
 namespace Traicers {
 using sf::CircleShape;
 
-std::optional<sf::Vector2f> RayCircleIntersection(const sf::Vector2f& cameraPosition, const float angleDeg, sf::CircleShape* obj) {
-    const sf::Vector2f circleCenter = obj->getGeometricCenter();
-    const float maxRayLength = 1000.f;
-    const float circleRadius = obj->getRadius();
-    const float halfDegrees = 180.f;
-    float angleRad = angleDeg * static_cast<float>(M_PI) / halfDegrees;
-    float dx = std::cos(angleRad);
-    float dy = std::sin(angleRad);
+std::optional<sf::Vector2f> RayBorderIntersection(const sf::Vector2f& cameraPosition, const float angle) {
+    float c = std::cos(angle);
+    float s = std::sin(angle);
+    float x0 = cameraPosition.x;
+    float y0 = cameraPosition.y;
 
-    // Коэффициенты квадратного уравнения
-    float a = dx * dx + dy * dy;  // Всегда == 1 (т.к. нормализовано)
-    float b = 2 * (dx * (cameraPosition.x - circleCenter.x) + dy * (cameraPosition.y - circleCenter.y));
-    float c = (cameraPosition.x - circleCenter.x) * (cameraPosition.x - circleCenter.x) +
-              (cameraPosition.y - circleCenter.y) * (cameraPosition.y - circleCenter.y) - circleRadius * circleRadius;
+    float t{};
+    float x{};
+    float y{};
 
-    float D = b * b - 4 * a * c;
-    if (D < 0) {
-        return sf::Vector2f(cameraPosition.x + dx, cameraPosition.y + dy);
-        return std::nullopt;  // Нет пересечений
-                              //
-    }
-
-    float t1 = (-b + std::sqrt(D)) / (2 * a);
-    float t2 = (-b - std::sqrt(D)) / (2 * a);
-
-    // Ищем минимальное t в диапазоне [0, maxRayLength]
-    float t = std::min(t1, t2);
-    if (t < 0 || t > maxRayLength) {
-        t = std::max(t1, t2);
-        if (t < 0 || t > maxRayLength) {
-            return std::nullopt;
+    t = (-y0) / s;
+    if (t > 0) {
+        x = x0 + c * t;
+        if ((kMinCoord < x) && (x < kMaxXCoord)) {
+            return sf::Vector2f(x, kMinCoord);
         }
     }
 
-    return sf::Vector2f(cameraPosition.x + t * dx, cameraPosition.y + t * dy);
+    t = (kMaxYCoord - y0) / s;
+    if (t > 0) {
+        x = x0 + c * t;
+        if ((kMinCoord < x) && (x < kMaxXCoord)) {
+            return sf::Vector2f(x, kMaxYCoord);
+        }
+    }
+
+    t = (kMinCoord - x0) / c;
+    if (t > 0) {
+        y = y0 + s * t;
+        if ((kMinCoord < y) && (y < kMaxYCoord)) {
+            return sf::Vector2f(kMinCoord, y);
+        }
+    }
+
+    t = (kMaxXCoord - x0) / c;
+    if (t > 0) {
+        y = y0 + s * t;
+        if ((kMinCoord < y) && (y < kMaxYCoord)) {
+            return sf::Vector2f(kMaxXCoord, y);
+        }
+    }
+    return std::nullopt;
 }
 
 std::optional<sf::Vector2f> CalculateCollision(const sf::Vector2f& cameraPosition, const float angle, sf::CircleShape* obj) {
-    float x1 = cameraPosition.x;
-    float y1 = cameraPosition.y;
+    float x0 = cameraPosition.x;
+    float y0 = cameraPosition.y;
+    float c = std::cos(angle);
+    float s = std::sin(angle);
 
     float r = obj->getRadius();
     float x2 = obj->getPosition().x + r;
     float y2 = obj->getPosition().y + r;
 
-    float k = std::tan(angle);
-    float b = cameraPosition.y - k * cameraPosition.x;
+    //         x^2 + bx + c = 0
+    float B = 2 * c * (x0 - x2) + 2 * s * (y0 - y2);
+    float C = std::pow((x0 - x2), kSquarePower) + std::pow((y0 - y2), kSquarePower) - std::pow(r, kSquarePower);
 
-    // float D = (2 * k * b - 2 * k * y2 - 2 * x2) * (2 * k * b - 2 * k * y2 - 2 * x2) - (4 * (k * k + 1) * (x2 * x2 + (b - y2) * (b - y2) - r * r));
-    float D = std::pow((2 * k * b) - (2 * k * y2) - (2 * x2), 2.f) - (4 * (k * k + 1) * (b * b - (2 * b * y2) + y2 * y2 + x2 * x2 - r * r));
-    if (D > 0) {
-        // float fx = (-(2 * k * b - 2 * k * y2 - 2 * x2) - (4 * std::sqrt(D))) / (2 * (k * k + 1));
-        // float sx = (-(2 * k * b - 2 * k * y2 - 2 * x2) + (4 * std::sqrt(D))) / (2 * (k * k + 1));
-        float fx = ((2 * k * y2) - (2 * k * b) + (2 * x2) + std::sqrt(D)) / (2 * k * k + 2);
-        float sx = ((2 * k * y2) - (2 * k * b) + (2 * x2) - std::sqrt(D)) / (2 * k * k + 2);
-        float fy = k * fx + b;
-        float sy = k * sx + b;
-        if (((fx - x1) * (fx - x1) + (fy - y2) * (fy - y2)) <= ((sx - x1) * (sx - x1) + (sy - y2) * (sy - y2))) {
-            return sf::Vector2f(fx, fy);
-        } else {
-            return sf::Vector2f(sx, sy);
+    float D = std::pow(B, kSquarePower) - 4 * C;
+    if (D >= 0) {
+        float ft = (-B + std::sqrt(D)) / 2;
+        float st = (-B - std::sqrt(D)) / 2;
+        if ((ft < 0) || (st < 0)) {
+            return RayBorderIntersection(cameraPosition, angle);
         }
-    }
 
-    //    return std::nullopt;
-    return sf::Vector2f(1000, k * 1000 + b);
+        float fx = x0 + c * ft;
+        float sx = x0 + c * st;
+
+        float fy = y0 + s * ft;
+        float sy = y0 + s * st;
+
+        if ((std::pow(fx - x0, kSquarePower) + std::pow(fy - y0, kSquarePower)) <
+            (std::pow(sx - x0, kSquarePower) + std::pow(sy - y0, kSquarePower))) {
+            return sf::Vector2f(fx, fy);
+        }
+        return sf::Vector2f(sx, sy);
+    }
+    return RayBorderIntersection(cameraPosition, angle);
 }
 
 void CreateTraisers(const sf::Vector2f& cameraPosition, sf::Shape* object, std::vector<std::unique_ptr<sf::VertexArray>>& traisers) {
-    const float maxAngle = 360.f;
     traisers.clear();
 
-    for (float angle = 0; angle <= maxAngle; angle += 1.f) {
+    for (float angle = 0; angle <= kMaxAngle; angle += kDeltaAngle) {
         std::optional<sf::Vector2f> collision = std::nullopt;
         if (auto* circle = dynamic_cast<sf::CircleShape*>(object)) {
             collision = CalculateCollision(cameraPosition, angle, circle);
         }
         if (collision) {
-            // std::cout << collision->x << ' ' << collision->y << '\n';
             DrawingObjects::CreateLine(cameraPosition, *collision, sf::Color::White, traisers);
         }
     }

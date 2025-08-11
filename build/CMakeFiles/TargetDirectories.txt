@@ -1,3 +1,0 @@
-/home/user/cpp/BadButBetterRayTraiser/build/CMakeFiles/BetterButBadRaytraiser.dir
-/home/user/cpp/BadButBetterRayTraiser/build/CMakeFiles/edit_cache.dir
-/home/user/cpp/BadButBetterRayTraiser/build/CMakeFiles/rebuild_cache.dir

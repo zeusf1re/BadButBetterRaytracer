@@ -3,4 +3,5 @@
 namespace Fps {
 
 void FpsCounter(sf::Clock& fpsClock, int& frameCount);
+
 }

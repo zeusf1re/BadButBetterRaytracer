@@ -1,6 +1,5 @@
 #include "DrawingObjects.hpp"
 #include <SFML/Graphics.hpp>
-#include <cmath>
 
 namespace DrawingObjects {
 
@@ -26,7 +25,6 @@ void DrawAllVertexes(std::vector<std::unique_ptr<sf::VertexArray>>& vertexes, sf
 
 void CreateLine(const sf::Vector2f& startPoint, const sf::Vector2f& endPoint, const sf::Color& color,
                 std::vector<std::unique_ptr<sf::VertexArray>>& vertexes) {
-    //    std::unique_ptr<sf::Shape> line = std::make_unique<sf::VertexArray>(sf::Lines, 2);
     std::unique_ptr<sf::VertexArray> line = std::make_unique<sf::VertexArray>(sf::PrimitiveType::Lines, 2);
     (*line)[0].position = startPoint;
     (*line)[1].position = endPoint;
@@ -48,20 +46,4 @@ void CreateCamera(std::vector<std::unique_ptr<sf::Shape>>& shapes) {
     shapes.push_back(std::move(camera));
 }
 
-// void CreateKrug(std::vector<std::unique_ptr<sf::VertexArray>>& vertexes) {
-//     float x1 = 300.f;
-//     float y1 = 300.f;
-//     float r = 50.f;
-//
-//     sf::Vector2f a(x1, y1);
-//     sf::VertexArray vertices(sf::PrimitiveType::Points);
-//     for (float i = 0; i < 360; ++i) {
-//         vertices.append({
-//             {x1 + r * std::cos(i), y1 + r * std::sin(i)},
-//             sf::Color::Green
-//         });
-//     }
-//     window.draw(vertices);
-// }
-//
 }  // namespace DrawingObjects
