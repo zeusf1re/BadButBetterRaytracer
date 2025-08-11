@@ -5,6 +5,10 @@
 ## Installation
 ``` bash
 git clone https://github.com/zeusf1re/BadButBetterRaytracer.git
+cd BadButBetterRaytracer/
+```
+## Building
+```bash
 mkdir build
 cmake ..
 cmake --build .
